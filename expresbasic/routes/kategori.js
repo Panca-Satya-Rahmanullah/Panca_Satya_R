@@ -1,115 +1,91 @@
-var express = require("express");
+var express = require('express');
 var router = express.Router();
+
 var connection = require('../config/database.js');
 
-// Menampilkan semua mahasiswa
-router.get('/', function(req, res, next) {
-    connection.query("SELECT * FROM mahasiswa ORDER BY id_mahasiswa DESC", function(err, rows) {
-        if (err) {
-            req.flash('error', err);
-        } else {
-            res.render('mahasiswa/index', {
+router.get('/', function(req, res, next){
+    connection.query('select * from kategori order by id_kategori desc', function(err, rows){
+        if(err){
+            req.flash('error',err);
+        }else{
+            res.render('kategori/index',{
                 data: rows
             });
         }
     });
 });
 
-// Form tambah mahasiswa
 router.get('/create', function(req, res, next){
-    res.render('mahasiswa/create',{
-        nama: '',
-        nrp: '',
-        tgl_lahir: '',
-        jenis_kelamin: '',
-        agama: '',
-        hoby: '',
-        alamat: '',
-        program_studi: ''
+    res.render('kategori/create',{
+        nama_kategori: ''
     })
 });
 
-// Proses tambah mahasiswa
 router.post('/store', function(req, res, next){
-    try{
-        let {nama, nrp, tgl_lahir, jenis_kelamin, agama, hoby, alamat, program_studi} = req.body;
+    try {
+        let {nama_kategori} = req.body;
         let Data = {
-            nama,
-            nrp,
-            tgl_lahir,
-            jenis_kelamin,
-            agama,
-            hoby,
-            alamat,
-            program_studi
-        };
-        connection.query('INSERT INTO mahasiswa SET ?', Data, function(err, result){
+            nama_kategori
+        }
+        connection.query('insert into kategori set ?', Data, function(err, result){
             if(err){
-                req.flash('error', 'Gagal menyimpan data');
+                req.flash('error','Gagal menyimpan data!');
             }else{
-                req.flash('success', 'Berhasil menyimpan data');
+                req.flash('success','Berhasil menyimpan data!');
             }
-            res.redirect('/mahasiswa');
-        });
-    } catch(err) {
-        req.flash('error', "Terjadi kesalahan pada fungsi");
-        res.redirect('/mahasiswa');
+            res.redirect('/kategori');
+        })
+    } catch {
+        req.flash('error','Terjadi kesalahan pada fungsi')
+        res.redirect('/kategori');
     }
-});
+})
 
-// Form edit mahasiswa
 router.get('/edit/(:id)', function(req, res, next){
     let id = req.params.id;
-    connection.query('SELECT * FROM mahasiswa WHERE id_mahasiswa = ?', [id], function(err, rows){
-        if(err || rows.length === 0){
-            req.flash('error','Query gagal atau data tidak ditemukan');
-            res.redirect('/mahasiswa');
+    connection.query('select * from kategori where id_kategori = ' + id, function(err, rows){
+        if(err){
+            req.flash('error','query gagal');
         }else{
-            res.render('mahasiswa/edit', rows[0]);
+            res.render('kategori/edit',{
+                id:     rows[0].id_kategori,
+                nama:       rows[0].nama_kategori
+            })
         }
-    });
-});
+    })
+})
 
-// Proses update mahasiswa
 router.post('/update/(:id)', function(req, res, next){
     try{
         let id = req.params.id;
-        let {nama, nrp, tgl_lahir, jenis_kelamin, agama, hoby, alamat, program_studi} = req.body;
+        let {nama_kategori} = req.body;
         let Data = {
-            nama,
-            nrp,
-            tgl_lahir,
-            jenis_kelamin,
-            agama,
-            hoby,
-            alamat,
-            program_studi
-        };
-        connection.query('UPDATE mahasiswa SET ? WHERE id_mahasiswa = ?', [Data, id], function(err){
+            nama_kategori: nama_kategori
+        }
+        connection.query('update kategori set ? where id_kategori = ' + id, Data, function(err){
             if(err){
-                req.flash('error', 'Query gagal');
+                req.flash('error', 'query gagal');
             }else{
-                req.flash('success', 'Berhasil memperbarui data');
+                req.flash('succes', 'Berhasil memperbarui data');
             }
-            res.redirect('/mahasiswa');
-        });
+            res.redirect('/kategori');
+        })
     } catch (error) {
         req.flash('error','Terjadi kesalahan pada router');
-        res.redirect('/mahasiswa');
+        res.redirect('/kategori');
     }
-});
+})
 
-// Hapus mahasiswa
 router.get('/delete/(:id)', function(req, res, next){
     let id = req.params.id;
-    connection.query('DELETE FROM mahasiswa WHERE id_mahasiswa = ?', [id], function(err){
+    connection.query('delete from kategori where id_kategori = ' + id, function(err){
         if(err){
-            req.flash('error', 'Gagal menghapus data');
+            req.flash('error', 'gagal query');
         }else{
             req.flash('success','Data terhapus');
         }
-        res.redirect('/mahasiswa');
-    });
-});
+        res.redirect('/kategori');
+    })
+})
 
 module.exports = router;

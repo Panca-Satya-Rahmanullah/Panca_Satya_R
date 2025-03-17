@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var kategoriRouter = require('./routes/kategori');
 var mahasiswaRouter = require('./routes/mahasiswa');
+var kartu_keluargaRouter = require('./routes/kartu_keluarga');
 
 var app = express();
 
@@ -40,6 +41,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/kategori', kategoriRouter);
 app.use('/mahasiswa', mahasiswaRouter);
+app.use('/kartu_keluarga', kartu_keluargaRouter);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
